@@ -44,40 +44,46 @@ plot(x, sin(seq(-pi, pi, by = 0.1)), type = "l", col = "red", xlab = "angle",
 ####Median number of Steps per Day: `median(activity_steps_totals$steps)`
 
 ### 3. Aggregate steps by interval
+```
 activity_steps_averages <- aggregate(steps ~ interval, data=activity_data, FUN = function(x) c(average=mean(x))) 
-
-# Line plot of Steps per Interval
+```
+#### Line plot of Steps per Interval
+```
 plot(activity_steps_averages$steps, type="l", col="blue", ylab="Number of Steps", xlab="Interval Number", main="Line Plot of Steps by 5 minute Intervals")
+```
 
-
-# Interval with greatest average number of steps
-activity_steps_averages[which(activity_steps_averages$steps == max(activity_steps_averages$steps)),]
+#### Interval with greatest average number of steps
+####Interval #: `activity_steps_averages[which(activity_steps_averages$steps == max(activity_steps_averages$steps)),]`
 
 # Number of NA values
-count_NA <- sum(is.na(activity_data$steps))
+####Count NAs: `count_NA <- sum(is.na(activity_data$steps))`
 
-# Repopulate NA's with arbitrary values...
-# Simplest approach is to use the average value from each timestep, as we have already calculated that value
+### Repopulate NA's with arbitrary values...
+#### Simplest approach is to use the average value from each timestep, as we have already calculated that value
+```
 activity_steps <- data.frame(activity_data$steps)
 activity_steps[is.na(activity_steps),] <- ceiling(tapply(X=activity_data$steps,FUN=mean,INDEX=activity_data$interval, na.rm=TRUE))
 activity_steps_imputted <- cbind(activity_steps, activity_data)
 colnames(activity_steps_imputted) <- c("Steps_Imputted","Steps_Original", "Date", "Interval")
 
 activity_steps_imputted_totals <- aggregate(Steps_Imputted ~ Date, data=activity_steps_imputted, FUN = function(x) c(totals=sum(x))) 
-# Plot Histogram
+```
+
+#### Plot Histogram
+```
 hist(activity_steps_imputted_totals$Steps_Imputted, 
 	main="Histogram for Activity - Total Steps (with Imputted Values)", 
 	xlab="Number of Steps", 
 	ylab="Number of Days", 
 	breaks="freedman-diaconis",
 	col="pink")
-	
-mean_imputted_steps_per_day <- mean(activity_steps_imputted_totals$Steps_Imputted)
-median_imputted_steps_per_day <- median(activity_steps_imputted_totals$Steps_Imputted)
+```	
+####Mean number of Steps per Day based on Imputted Data: `mean(activity_steps_imputted_totals$Steps_Imputted)`
+####Median number of Steps per Day based on Imputted Data `median(activity_steps_imputted_totals$Steps_Imputted)`
 
 
-# Add a section to list weekdays vs weekends
-
+### Add a section to list weekdays vs weekends
+```
 tm1.lt <- as.POSIXlt(activity_data$date)
 activity_data$day <- tm1.lt$wday
 activity_data$day[activity_data$day <= 5] <- "0" # Day = 0 if Weekday
@@ -92,4 +98,4 @@ old.par <- par(mfrow=c(2, 1))
 plot(activity_data_weekends$steps,type="l", col="blue", ylab="Number of Steps", xlab="Interval Number", main="Line Plot of Steps by 5 minute Intervals - Weekends")
 plot(activity_data_weekdays$steps,type="l", col="blue", ylab="Number of Steps", xlab="Interval Number", main="Line Plot of Steps by 5 minute Intervals - Weekdays")
 par(old.par)
- 
+```
